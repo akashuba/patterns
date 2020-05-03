@@ -77,9 +77,10 @@ class Observer {
 
 function extend(obj, extension) {
 	
-	for (const key in extension) {
-		obj[key] = extension[key];
-	}
+	// for (const key in extension) {
+	// 	obj[key] = extension[key];
+	// }
+	Object.assign(obj, extension);
 }
 
 extend(controlCheckbox, new Subject());
