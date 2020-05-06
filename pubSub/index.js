@@ -1,3 +1,6 @@
+const controlCheckbox = document.getElementById("mainCheckbox");
+const addBtn = document.getElementById("addNewSubscriber");
+const container = document.getElementById("subscriberContainer");
 const pubSubStore = {};
 
 (function (pubSubStore) {
@@ -56,18 +59,29 @@ const pubSubStore = {};
 }(pubSubStore));
 
 messageLogger = function (topics, data) {
-	console.log("Logging: " + topics + ": " + data);
+	console.log("topic: ", topics + "data: ", data)
 };
 
-subscription = pubSubStore.subscribe("inbox/newMessage", messageLogger);
+const subscription = pubSubStore.subscribe("inbox/newMessage", messageLogger);
 
-pubSubStore.publish("inbox/newMessage", "hello there");
+addBtn.onclick = addNewSubscriber;
 
-pubSubStore.publish("inbox/newMessage", {
-	sender: "Jimmy",
-	body: "Hi from Jimmy"
-});
+controlCheckbox.oninput = function () {
+	pubSubStore.publish("inbox/newMessage", this.value)
+}
 
-pubSubStore.unsubscribe(subscription);
+function updateFunc (topic, value) {
+	this.value = value;
+}
 
-pubSubStore.publish("inbox/newMessage", "After unsubscribe");
+function addNewSubscriber () {
+	const inputField = document.createElement("input");
+	const inputWrapper = document.createElement("div")
+	inputField.type = "text";
+
+	const inputSubscriptionToken = pubSubStore.subscribe("inbox/newMessage", updateFunc.bind(inputField));
+
+	inputWrapper.appendChild(inputField);
+	container.appendChild(inputWrapper);
+}
+

@@ -2,7 +2,6 @@ const controlCheckbox = document.getElementById("mainCheckbox");
 const addBtn = document.getElementById("addNewObserver");
 const container = document.getElementById("observerContainer");
 
-
 class ObserverList {
 	observerList = [];
 
