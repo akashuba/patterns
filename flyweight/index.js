@@ -9,53 +9,100 @@ class Book {
 	}
 }
 
-class BookFactory {
-	existingBooks = {};
-	existingBook = null;
+const bookFactory = {
+	existingBooks: {},
+	existingBook: null,
+
+
+	createBook(title, author, genre, pageCount, publisherID, ISBN) {
+		existingBook = this.existingBooks[ISBN];
+	
+		if (existingBook) {
+			return existingBook;
+		} else {
+			var book = new Book(title, author, genre, pageCount, publisherID, ISBN);
+			this.existingBooks[ISBN] = book;
+			return book;
+		}
+	}
+
 }
 
-BookFactory.createBook = function (title, author, genre, pageCount, publisherID, ISBN) {
-	existingBook = this.existingBooks[ISBN];
+const bookRecordManager = {
+	bookRecordDatabase: {},
 
-	if (existingBook) {
-		return existingBook;
-	} else {
-		var book = new Book(title, author, genre, pageCount, publisherID, ISBN);
-		this.existingBooks[ISBN] = book;
-		return book;
+	addBookRecord({ id, title, author, genre, pageCount, publisherID, ISBN, checkoutDate, checkoutMember, dueReturnDate, availability }) {
+		var book = bookFactory.createBook(id, title, author, genre, pageCount, publisherID, ISBN);
+	
+		this.bookRecordDatabase[id] = {
+			checkoutMember,
+			checkoutDate,
+			dueReturnDate,
+			availability,
+			book,
+		}
+	},
+
+	updateCheckoutStatus({ id, newStatus, checkoutDate, checkoutMember, newReturnDate }) {
+		var record = this.bookRecordDatabase[id];
+		record.availability = newStatus;
+		record.checkoutDate = checkoutDate;
+		record.checkoutMember = checkoutMember;
+		record.dueReturnDate = newReturnDate;
+	},
+	
+	extendCheckoutPeriod({ id, newReturnDate }) {
+		this.bookRecordDatabase[id].dueReturnDate = newReturnDate;
+	},
+	
+	isPastDue() {
+		const currentDate = new Date();
+	
+		return currentDate.getTime() > Date.parse(this.bookRecordDatabase[id].dueReturnDate);
 	}
 }
 
-class BookRecordManager {
-	bookRecordDatabase = {};
-}
+bookRecordManager.addBookRecord({
+	id: 1,
+	title: 'The Old Man and the Sea',
+	author: 'Ernest Hemingway',
+	genre: 'Literary Fiction',
+	pageCount: 127,
+	publisherID: 123,
+	ISBN: '0-684-80122-1',
+	checkoutDate: 1589047919373,
+	checkoutMember: 'Johny',
+	dueReturnDate: 1589047919373,
+	availability: 'engaged',
+})
 
-BookRecordManager.addBookRecord = function (id, title, author, genre, pageCount, publisherID, ISBN, checkoutDate, checkoutMember, dueReturnDate, availability) {
-	var book = BookFactory.createBook(id, title, author, genre, pageCount, publisherID, ISBN);
+bookRecordManager.addBookRecord({
+	id: 2,
+	title: 'The Old Man and the Sea',
+	author: 'Ernest Hemingway',
+	genre: 'Literary Fiction',
+	pageCount: 127,
+	publisherID: 123,
+	ISBN: '0-684-80122-1',
+	checkoutDate: 1589099166710,
+	checkoutMember: 'Johny',
+	dueReturnDate: 1589099166710,
+	availability: 'engaged',
+})
 
-	this.bookRecordDatabase[id] = {
-		checkoutMember,
-		checkoutDate,
-		dueReturnDate,
-		availability,
-		book,
-	}
-}
+bookRecordManager.addBookRecord({
+	id: 3,
+	title: 'Ready Player One',
+	author: 'Ernest Cline',
+	genre: 'Science fiction',
+	pageCount: 579,
+	publisherID: 1234,
+	ISBN: '978-1-524-76328-2',
+	checkoutDate: 1589099166710,
+	checkoutMember: 'Johny',
+	dueReturnDate: 1589099166710,
+	availability: 'engaged',
+})
 
-BookRecordManager.updateCheckoutStatus = function (id, newStatus, checkoutDate, checkoutMember, newReturnDate) {
-	var record = this.bookRecordDatabase[id];
-	record.availability = newStatus;
-	record.checkoutDate = checkoutDate;
-	record.checkoutMember = checkoutMember;
-	record.dueReturnDate = newReturnDate;
-}
-
-BookRecordManager.extendCheckoutPeriod = function (id, newReturnDate) {
-	this.bookRecordDatabase[id].dueReturnDate = newReturnDate;
-}
-
-BookRecordManager.isPastDue = function () {
-	const currentDate = new Date();
-
-	return currentDate.getTime() > Date.parse(this.bookRecordDatabase[id].dueReturnDate);
-}
+console.log('bookRecordManager ', bookRecordManager.bookRecordDatabase);
+console.log('bookFactory ', bookFactory.existingBooks);
