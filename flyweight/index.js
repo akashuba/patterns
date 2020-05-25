@@ -1,28 +1,5 @@
-interface IBook {
-	title: string;
-	author: string;
-	genre: string;
-	pageCount: number;
-	publisherID: number;
-	ISBN: string;
-}
-
-interface IBookFactory {
-	existingBooks: {},
-	existingBook: null,
-
-	createBook(props: IBook): object | null
-}
-
 class Book {
-	title: string;
-	author: string;
-	genre: string;
-	pageCount: number;
-	publisherID: number;
-	ISBN: string;
-
-	constructor({title, author, genre, pageCount, publisherID, ISBN}: IBook) {
+	constructor(title, author, genre, pageCount, publisherID, ISBN) {
 		this.title = title;
 		this.author = author;
 		this.genre = genre;
@@ -32,18 +9,18 @@ class Book {
 	}
 }
 
-const bookFactory: IBookFactory = {
+const bookFactory = {
 	existingBooks: {},
 	existingBook: null,
 
 
-	createBook({title, author, genre, pageCount, publisherID, ISBN}: IBook) {
-		const existingBook = this.existingBooks[ISBN];
+	createBook(title, author, genre, pageCount, publisherID, ISBN) {
+		existingBook = this.existingBooks[ISBN];
 	
 		if (existingBook) {
 			return existingBook;
 		} else {
-			var book = new Book({title, author, genre, pageCount, publisherID, ISBN});
+			var book = new Book(title, author, genre, pageCount, publisherID, ISBN);
 			this.existingBooks[ISBN] = book;
 			return book;
 		}
